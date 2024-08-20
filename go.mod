@@ -1,4 +1,4 @@
-module github.com/Zel-hub7/event-backend
+module github.com/Zel-hub7/event-backend/event-management-system
 
 go 1.22.6
 
