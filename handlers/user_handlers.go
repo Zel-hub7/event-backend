@@ -22,15 +22,18 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 // CreateUser handles the HTTP POST request to add a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, "Invalid input", http.StatusBadRequest)
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+
+	// Insert the new user into the database
 	if err := config.DB.Create(&user).Error; err != nil {
-		http.Error(w, "Error creating user", http.StatusInternalServerError)
+		http.Error(w, "Could not create user", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(user)
 }
