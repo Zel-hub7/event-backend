@@ -1,26 +1,30 @@
-// routes/routes.go
 package routes
 
 import (
+	"net/http"
+
 	"github.com/Zel-hub7/event-backend/event-management-system/handlers"
-	"github.com/Zel-hub7/event-backend/event-management-system/middlewares"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
-func SetupRouter() *mux.Router {
+func SetupRouter() http.Handler {
 	router := mux.NewRouter()
 
-	// Public routes
-	router.HandleFunc("/signup", handlers.Signup).Methods("POST")
-	router.HandleFunc("/login", handlers.Login).Methods("POST")
+	// Create a new CORS handler
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"}, // Allow your frontend origin
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Requested-With", "Accept"},
+		AllowCredentials: true,
+	})
 
-	// Protected routes
+	// Define your routes
 	api := router.PathPrefix("/api").Subrouter()
-	api.Use(middlewares.AuthMiddleware)
 	api.HandleFunc("/users", handlers.GetUsers).Methods("GET")
 	api.HandleFunc("/events", handlers.GetEvents).Methods("GET")
 	api.HandleFunc("/events", handlers.CreateEvent).Methods("POST")
-	api.HandleFunc("/logout", handlers.Logout).Methods("POST") // Logout route
 
-	return router
+	// Apply CORS middleware to the router
+	return c.Handler(router)
 }

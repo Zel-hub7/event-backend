@@ -12,7 +12,7 @@ func main() {
 	// Connect to the database
 	config.ConnectDatabase()
 
-	// Set up the router
+	// Set up the router with CORS
 	router := routes.SetupRouter()
 
 	// Start the server
